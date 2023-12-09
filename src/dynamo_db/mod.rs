@@ -10,7 +10,7 @@ use aws_config::BehaviorVersion;
 
 use uuid::Uuid;
 
-pub async fn perform_dynamodb_operations() -> Result<(), Error> {
+pub async fn perform_dynamodb_operations(age: &str ) -> Result<(), Error> {
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
     let res = client.list_tables().send().await?;
@@ -31,7 +31,7 @@ pub async fn perform_dynamodb_operations() -> Result<(), Error> {
         .item(
             "ageR",
             AttributeValue::N(String::from(
-                "122".to_string(),
+                age
             )),
         )
         .item("name", AttributeValue::S(String::from("Dan")));
