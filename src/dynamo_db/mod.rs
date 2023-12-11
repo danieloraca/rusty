@@ -1,16 +1,19 @@
 use aws_sdk_dynamodb::{
-    Client, Error,
-};
-
-use aws_sdk_dynamodb::types::{
-    AttributeValue,
+    operation::{
+        delete_item::DeleteItemOutput
+    },
+    types::{
+        AttributeValue,
+    },
+    Client,
+    Error,
 };
 
 use aws_config::BehaviorVersion;
 
 use uuid::Uuid;
 
-pub async fn perform_dynamodb_operations(age: &str ) -> Result<(), Error> {
+pub async fn create_new(age: &str ) -> Result<(), Error> {
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
     let res = client.list_tables().send().await?;
@@ -35,6 +38,22 @@ pub async fn perform_dynamodb_operations(age: &str ) -> Result<(), Error> {
             )),
         )
         .item("name", AttributeValue::S(String::from("Dan")));
+    request.send().await?;
+
+    Ok(())
+}
+
+pub async fn delete_item(
+    client: &Client,
+    table: &str,
+    key: &str,
+    value: &str,
+) -> Result<(), Error> {
+    let request = client
+        .delete_item()
+        .table_name(table)
+        .key(key, AttributeValue::S(value.into()));
+
     request.send().await?;
 
     Ok(())
