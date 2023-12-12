@@ -28,10 +28,11 @@ async fn main() {
 
     if let Some(arg_age) = matches.value_of("age") {
         dynamo_db::create_new(arg_age).await.unwrap();
-    }
-
-    if let Some(arg_id) = matches.value_of("id") {
+    } else if let Some(arg_id) = matches.value_of("id") {
         dynamo_db::delete_item(arg_id).await.unwrap();
+    } else {
+        println!("No arguments provided");
+        dynamo_db::list_first_5_items().await.unwrap();
     }
 
     println!("Done!");

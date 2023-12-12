@@ -1,7 +1,7 @@
 use aws_sdk_dynamodb::{
-    operation::{
-        delete_item::DeleteItemOutput
-    },
+//     operation::{
+//         delete_item::DeleteItemOutput
+//     },
     types::{
         AttributeValue,
     },
@@ -47,8 +47,7 @@ pub async fn delete_item(id: &str) -> Result<(), Error> {
     let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&shared_config);
 
-    //write item to DynamoDan table
-    let request = client
+    let result = client
         .delete_item()
         .table_name("DynamoDan")
         .key(
@@ -56,8 +55,41 @@ pub async fn delete_item(id: &str) -> Result<(), Error> {
             AttributeValue::S(String::from(
                 id,
             )),
-        );
-    request.send().await?;
+        )
+        .send()
+        .await?;
+
+    println!("Deleted item: {:?}", result);
+
+    Ok(())
+}
+
+pub async fn list_first_5_items() -> Result<(), Error> {
+    let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
+    let client = Client::new(&shared_config);
+
+    let result = client
+        .scan()
+        .table_name("DynamoDan")
+        .limit(10)
+        .send()
+        .await?;
+
+    println!("First 10 items: {:#?}", result);
+
+    if let Some(items) = result.items {
+        for item in items {
+            println!("Item: {:?}", item);
+        }
+    }
+
+    if let Some(last_evaluated_key) = result.last_evaluated_key {
+        println!("Last evaluated key: {:?}", last_evaluated_key);
+    }
+
+    if let Some(consumed_capacity) = result.consumed_capacity {
+        println!("Consumed capacity: {:?}", consumed_capacity);
+    }
 
     Ok(())
 }
