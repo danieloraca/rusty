@@ -43,17 +43,20 @@ pub async fn create_new(age: &str ) -> Result<(), Error> {
     Ok(())
 }
 
-pub async fn delete_item(
-    client: &Client,
-    table: &str,
-    key: &str,
-    value: &str,
-) -> Result<(), Error> {
+pub async fn delete_item(id: &str) -> Result<(), Error> {
+    let shared_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
+    let client = Client::new(&shared_config);
+
+    //write item to DynamoDan table
     let request = client
         .delete_item()
-        .table_name(table)
-        .key(key, AttributeValue::S(value.into()));
-
+        .table_name("DynamoDan")
+        .key(
+            "id",
+            AttributeValue::S(String::from(
+                id,
+            )),
+        );
     request.send().await?;
 
     Ok(())
