@@ -21,3 +21,9 @@ features = [
     "fast-rng",          # Use a faster (but still sufficiently random) RNG
     "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
 ]
+
+[profile.release]
+opt-level = 'z'     # Optimize for size.
+lto = true          # Enable Link Time Optimization
+codegen-units = 1   # Reduce number of codegen units to increase optimizations.
+panic = 'abort'     # Abort on panic  
