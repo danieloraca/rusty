@@ -1,4 +1,5 @@
 mod dynamo_db;
+mod mysql;
 
 use clap::{App, Arg};
 
@@ -24,12 +25,21 @@ async fn main() {
                 .help("Sets the id")
                 .takes_value(true),
         )
+        .arg(
+            Arg::with_name("list test tables")
+                .short("x")
+                .long("x")
+                .help("Lists the test tables from mysql"),
+        )
         .get_matches();
 
     if let Some(arg_age) = matches.value_of("age") {
         dynamo_db::create_new(arg_age).await.unwrap();
     } else if let Some(arg_id) = matches.value_of("id") {
         dynamo_db::delete_item(arg_id).await.unwrap();
+    } else if matches.is_present("list test tables") {
+        println!("Listing test tables");
+        mysql::list_tables().await.unwrap();
     } else {
         println!("No arguments provided");
         dynamo_db::list_first_5_items().await.unwrap();
